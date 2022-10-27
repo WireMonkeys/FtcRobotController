@@ -110,10 +110,9 @@ public class DriveBaseTwentyTwo extends OpMode
     public void start() {
         runtime.reset();
     }
-
     double handStick = 0.46;
     double wristStick = 0.00;
-    double eMotors;
+    int eMotors = 0;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -135,18 +134,23 @@ public class DriveBaseTwentyTwo extends OpMode
 
 
 
-       if (gamepad2.a){
-           eMotor.setTargetPosition(0);
-       }
-        if (gamepad2.b){
-            eMotor.setTargetPosition(100);
+        if(gamepad2.a){
+            eMotors = 0;
         }
-        if (gamepad2.x){
-            eMotor.setTargetPosition(200);
+        if(gamepad2.y){
+            eMotors = -4088;
         }
-        if (gamepad2.y){
-            eMotor.setTargetPosition(300);
+        if(gamepad2.x){
+            eMotors = -2088;
         }
+        if(gamepad2.b){
+            eMotors = -3088;
+        }
+        eMotor.setTargetPosition(eMotors);
+
+        eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        eMotor.setPower(Math.abs(0.5));
 
 
 
@@ -178,6 +182,8 @@ public class DriveBaseTwentyTwo extends OpMode
 
 
     }
+
+
 
     /*
      * Code to run ONCE after the driver hits STOP
