@@ -36,19 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-/**
- * This file contains an example of an iterative (Non-Linear) "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all iterative OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
+
 
 @TeleOp(name="DriveBaseTwentyTwo", group="DriveBase")
 
@@ -60,10 +48,11 @@ public class DriveBaseTwentyTwo extends OpMode
     private DcMotor rightFront = null;
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
-    private DcMotor emotor = null;
+    private DcMotor eMotor = null;
 
     private Servo   wrist;
     private Servo   hand;
+
 
 //    boolean rampUp = true;
 
@@ -83,7 +72,7 @@ public class DriveBaseTwentyTwo extends OpMode
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
         leftRear  = hardwareMap.get(DcMotor.class, "backLeft");
         rightRear = hardwareMap.get(DcMotor.class, "backRight");
-        emotor = hardwareMap.get(DcMotor.class, "eMotor");
+        eMotor = hardwareMap.get(DcMotor.class, "eMotor");
         hand = hardwareMap.get(Servo.class, "hand");
         wrist = hardwareMap.get(Servo.class, "wrist");
 
@@ -95,8 +84,14 @@ public class DriveBaseTwentyTwo extends OpMode
         rightRear.setDirection(DcMotor.Direction.REVERSE);
 
 
+        eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
+        telemetry.addData("Starting at",  "%7d",
+                eMotor.getCurrentPosition());
+        telemetry.update();
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -118,7 +113,7 @@ public class DriveBaseTwentyTwo extends OpMode
 
     double handStick = 0.46;
     double wristStick = 0.00;
-
+    double eMotors;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -127,39 +122,40 @@ public class DriveBaseTwentyTwo extends OpMode
 
 
         hand.setPosition(handStick);
-
-        handStick = handStick + (gamepad2.right_stick_x * 0.001);
-
-        handStick = Range.clip(handStick, 0.0d, 1.0d);
-
         wrist.setPosition(wristStick);
 
-        wristStick = (gamepad2.right_trigger * 0.5) - (gamepad2.left_trigger);
+        handStick = handStick + (gamepad2.right_stick_x * 0.001);
+        wristStick = wristStick + (-gamepad2.left_stick_x * 0.001);
+
+
+        wristStick = Range.clip(wristStick, 0.0d, 1.0d);
+        handStick = Range.clip(handStick, 0.0d, 1.0d);
 
 
 
-        telemetry.addData("hand Servo:", handStick);
 
 
-        emotor.setPower(gamepad2.left_trigger * 0.1 - gamepad2.right_trigger * 0.1);
+       if (gamepad2.a){
+           eMotor.setTargetPosition(0);
+       }
+        if (gamepad2.b){
+            eMotor.setTargetPosition(100);
+        }
+        if (gamepad2.x){
+            eMotor.setTargetPosition(200);
+        }
+        if (gamepad2.y){
+            eMotor.setTargetPosition(300);
+        }
 
 
-        drive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+
+        drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
 
 
-//         double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-// double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-// double rightX = -gamepad1.right_stick_x;
-// final double v1 = r * Math.cos(robotAngle) + rightX;
-// final double v2 = r * Math.sin(robotAngle) - rightX;
-// final double v3 = r * Math.sin(robotAngle) + rightX;
-// final double v4 = r * Math.cos(robotAngle) - rightX;
 
-// leftFront.setPower(v1);
-// rightFront.setPower(v2);
-// leftRear.setPower(v3);
-// rightRear.setPower(v4);
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Currently at",  " at %7d",
+                eMotor.getCurrentPosition());
 
     }
 
@@ -178,6 +174,8 @@ public class DriveBaseTwentyTwo extends OpMode
         rightRear.setPower(v4);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
+
+
 
     }
 
