@@ -110,8 +110,8 @@ public class DriveBaseTwentyTwo extends OpMode
     public void start() {
         runtime.reset();
     }
-    double handStick = 0.46;
-    double wristStick = 0.00;
+    double handStick = 0.3059;
+    double wristStick = 0.3577;
     int eMotors = 0;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -123,16 +123,15 @@ public class DriveBaseTwentyTwo extends OpMode
         hand.setPosition(handStick);
         wrist.setPosition(wristStick);
 
-        handStick = handStick + (gamepad2.right_stick_x * 0.001);
-        wristStick = wristStick + (-gamepad2.left_stick_x * 0.001);
+        handStick = handStick + (gamepad2.right_stick_x * 0.005);
+        wristStick = wristStick + (-gamepad2.left_stick_x * 0.005);
 
 
-        wristStick = Range.clip(wristStick, 0.0d, 1.0d);
-        handStick = Range.clip(handStick, 0.0d, 1.0d);
+        wristStick = Range.clip(wristStick, 0.3577d, 0.6775d);
+        handStick = Range.clip(handStick, 0.3096d, 0.656d);
 
-
-
-
+        telemetry.addData("hand pos",hand.getPosition());
+        telemetry.addData("wrist pos",wrist.getPosition());
 
         if(gamepad2.a){
             eMotors = 0;
@@ -141,10 +140,10 @@ public class DriveBaseTwentyTwo extends OpMode
             eMotors = -4088;
         }
         if(gamepad2.x){
-            eMotors = -2088;
+            eMotors = -1610;
         }
         if(gamepad2.b){
-            eMotors = -3088;
+            eMotors = -2849;
         }
         eMotor.setTargetPosition(eMotors);
 
