@@ -123,18 +123,20 @@ public class DriveBaseTwentyTwo extends OpMode
         hand.setPosition(handStick);
         wrist.setPosition(wristStick);
 
-        handStick = handStick + (gamepad2.right_stick_x * 0.005);
+        handStick = handStick + (-gamepad2.right_stick_x * 0.005);
         wristStick = wristStick + (-gamepad2.left_stick_x * 0.005);
 
 
-        wristStick = Range.clip(wristStick, 0.3577d, 0.6775d);
+
+
+        wristStick = Range.clip(wristStick, 0.0d, 1.0d);
         handStick = Range.clip(handStick, 0.3096d, 0.656d);
 
         telemetry.addData("hand pos",hand.getPosition());
         telemetry.addData("wrist pos",wrist.getPosition());
 
         if(gamepad2.a){
-            eMotors = 0;
+            eMotors = -100;
         }
         if(gamepad2.y){
             eMotors = -4088;
@@ -145,6 +147,15 @@ public class DriveBaseTwentyTwo extends OpMode
         if(gamepad2.b){
             eMotors = -2849;
         }
+
+        if(gamepad2.right_bumper){
+            eMotors = eMotors - 10;
+        }
+        else if(gamepad2.left_bumper){
+            eMotors = eMotors + 100;
+        }
+        eMotors = Range.clip(eMotors, -4150, 0);
+
         eMotor.setTargetPosition(eMotors);
 
         eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
