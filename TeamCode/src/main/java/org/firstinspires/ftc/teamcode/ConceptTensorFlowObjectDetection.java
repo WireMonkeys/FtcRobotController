@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -67,9 +67,9 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
-      "1 Bolt",
-      "2 Bulb",
-      "3 Panel"
+            "1 Bolt",
+            "2 Bulb",
+            "3 Panel"
     };
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -140,8 +140,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-
-            while (opModeIsActive()) {
+            int object = 0;
+            while (opModeIsActive() && object == 0) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -151,6 +151,17 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                         // step through the list of recognitions and display image position/size information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
                         for (Recognition recognition : updatedRecognitions) {
+                            if(recognition.getLabel() == "1 Bolt"){
+                                object = 1;
+                            }
+
+                            if(recognition.getLabel() == "2 Bulb"){
+                                object = 2;
+                            }
+
+                            if(recognition.getLabel() == "3 Panel"){
+                                object = 3;
+                            }
 
                             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
 
@@ -160,7 +171,24 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 }
 
 
+            }
+            if(object == 1){
+                drive(1.0,0.0,0.0);
+                sleep(250);
 
+                drive(0.0,0.0,0.0);
+            }
+            if(object == 2){
+                drive(0.0,1.0,0.0);
+                sleep(250);
+
+                drive(0.0,0.0,0.0);
+            }
+            if(object == 3){
+                drive(0.0,0.0,1.0);
+                sleep(250);
+
+                drive(0.0,0.0,0.0);
             }
         }
     }
@@ -186,7 +214,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfodParameters.minResultConfidence = 0.60f;
         tfodParameters.isModelTensorFlow2 = true;
