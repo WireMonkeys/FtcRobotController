@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="DriveBaseTwentyTwo", group="DriveBase")
+@TeleOp(name="IntakeSystem", group="DriveBase")
 
 public class IntakeSystem extends OpMode
 {
@@ -116,8 +116,8 @@ public class IntakeSystem extends OpMode
     }
     double handStick = 0.0;
     double wristStick = 0.0;
-    double intakeOnes = 0.0;
-    double intakeTwos = 0.0;
+    double intakeOnes = 0.5;
+    double intakeTwos = 0.5;
     int eMotors = 0;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -126,22 +126,22 @@ public class IntakeSystem extends OpMode
     public void loop() {
 
 
+        handStick = handStick + (-gamepad2.right_stick_x * 0.005);
+        wristStick = wristStick + (-gamepad2.left_stick_x * 0.005);
+        intakeOnes = 0.475 + ((gamepad2.right_trigger / 10) - (gamepad2.left_trigger / 10));
+        intakeTwos = 0.525 + ((gamepad2.left_trigger / 10) - (gamepad2.right_trigger / 10));
+
+
         hand.setPosition(handStick);
         wrist.setPosition(wristStick);
         intakeOne.setPosition(intakeOnes);
         intakeTwo.setPosition(intakeTwos);
 
-        handStick = handStick + (-gamepad2.right_stick_x * 0.005);
-        wristStick = wristStick + (-gamepad2.left_stick_x * 0.005);
-        intakeOnes = intakeOnes + (-gamepad2.right_stick_x * 0.005);
-        intakeTwos = intakeTwos + (gamepad2.right_stick_x * 0.005);
-
-
 
         wristStick = Range.clip(wristStick, 0.0d, 1.0d);
         handStick = Range.clip(handStick, 0.3096d, 0.656d);
-        intakeOnes = Range.clip(intakeOnes, 1.0d, 1.0d);
-        intakeTwos = Range.clip(intakeTwos, 0.3096d, 0.656d);
+        intakeOnes = Range.clip(intakeOnes, 0.0d, 1.0d);
+        intakeTwos = Range.clip(intakeTwos, 0.0d, 1.0d);
 
         telemetry.addData("hand pos",hand.getPosition());
         telemetry.addData("wrist pos",wrist.getPosition());
