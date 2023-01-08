@@ -55,8 +55,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "PowerPlay Auto", group = "Autonomous")
-public class ConceptTensorFlowObjectDetection extends LinearOpMode {
+@Autonomous(name = "LowBattAuto", group = "Autonomous")
+public class LowBattAuto extends LinearOpMode {
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -192,20 +192,19 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 sleep(1750);
 
                 drive(0.0,0.0,0.5);
-                sleep(500);
+                sleep(600);
 
                 drive(0.0,0.0,0.0);
-
                 moveArm(1250);
                 hand.setPosition(0.3096);
                 sleep(2000);
 
                 drive(1.0,0.0,0.0);
-                sleep(900);
+                sleep(1000);
 
                 drive(0.0, 0.0, 0.0);
 
-                moveArm(900);
+                moveArm(850);
                 sleep(900);
 
                 hand.setPosition(0.656);
@@ -218,15 +217,15 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 sleep(500);
 
                 drive(0.0,0.0,0.5);
-                sleep(1250);
+                sleep(1500);
 
                 drive(0.0,0.0,0.0);
 
                 moveArm(4088);
                 sleep(3000);
 
-                drive(0.1,0.0,0.0);
-                sleep(500);
+                drive(0.2,0.0,0.0);
+                sleep(1000);
 
                 hand.setPosition(0.5);
                 sleep(1000);

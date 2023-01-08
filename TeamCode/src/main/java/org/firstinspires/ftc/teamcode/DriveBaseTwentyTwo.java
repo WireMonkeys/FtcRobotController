@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 
 
@@ -136,25 +137,25 @@ public class DriveBaseTwentyTwo extends OpMode
         telemetry.addData("wrist pos",wrist.getPosition());
 
         if(gamepad2.a){
-            eMotors = -100;
+            eMotors = 100;
         }
         if(gamepad2.y){
-            eMotors = -4088;
+            eMotors = 4088;
         }
         if(gamepad2.x){
-            eMotors = -1610;
+            eMotors = 1610;
         }
         if(gamepad2.b){
-            eMotors = -2849;
+            eMotors = 2849;
         }
 
         if(gamepad2.right_bumper){
             eMotors = eMotors - 10;
         }
         else if(gamepad2.left_bumper){
-            eMotors = eMotors + 100;
+            eMotors = eMotors + 10;
         }
-        eMotors = Range.clip(eMotors, -4150, 0);
+        eMotors = Range.clip(eMotors,0, 4088);
 
         eMotor.setTargetPosition(eMotors);
 
@@ -170,6 +171,8 @@ public class DriveBaseTwentyTwo extends OpMode
 
         telemetry.addData("Currently at",  " at %7d",
                 eMotor.getCurrentPosition());
+        telemetry.addData("Currently at",  " at %7d",
+                leftRear.getCurrentPosition());
 
     }
 
@@ -182,10 +185,10 @@ public class DriveBaseTwentyTwo extends OpMode
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
-        leftFront.setPower(v1);
-        rightFront.setPower(v2);
-        leftRear.setPower(v3);
-        rightRear.setPower(v4);
+        leftFront.setPower(v1/1.5);
+        rightFront.setPower(v2/1.5);
+        leftRear.setPower(v3/1.5);
+        rightRear.setPower(v4/1.5);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
 

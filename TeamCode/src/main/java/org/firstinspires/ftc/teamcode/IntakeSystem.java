@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -55,6 +56,8 @@ public class IntakeSystem extends OpMode
     private Servo   intakeTwo;
     private Servo   intakeOne;
 
+    DigitalChannel digitalTouch;
+
 
 //    boolean rampUp = true;
 
@@ -79,6 +82,7 @@ public class IntakeSystem extends OpMode
         wrist = hardwareMap.get(Servo.class, "wrist");
         intakeOne = hardwareMap.get(Servo.class, "intakeOne");
         intakeTwo = hardwareMap.get(Servo.class, "intakeTwo");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -89,6 +93,8 @@ public class IntakeSystem extends OpMode
 
 
         eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -128,8 +134,14 @@ public class IntakeSystem extends OpMode
 
         handStick = handStick + (-gamepad2.right_stick_x * 0.005);
         wristStick = wristStick + (-gamepad2.left_stick_x * 0.005);
-        intakeOnes = 0.475 + ((gamepad2.right_trigger / 10) - (gamepad2.left_trigger / 10));
-        intakeTwos = 0.525 + ((gamepad2.left_trigger / 10) - (gamepad2.right_trigger / 10));
+        intakeTwos = 0.5 + (gamepad2.left_trigger / 10);
+        intakeOnes = 0.5  - (gamepad2.left_trigger / 10);
+
+
+        if (digitalTouch.getState()== true) {
+            intakeOnes = 0.5 + (gamepad2.right_trigger / 10);
+            intakeTwos = 0.5 - (gamepad2.right_trigger / 10);
+        }
 
 
         hand.setPosition(handStick);
@@ -145,6 +157,8 @@ public class IntakeSystem extends OpMode
 
         telemetry.addData("hand pos",hand.getPosition());
         telemetry.addData("wrist pos",wrist.getPosition());
+
+
 
         if(gamepad2.a){
             eMotors = -100;
