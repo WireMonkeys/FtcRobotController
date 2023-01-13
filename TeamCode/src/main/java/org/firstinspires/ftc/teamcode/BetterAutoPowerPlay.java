@@ -233,6 +233,9 @@ public class BetterAutoPowerPlay extends LinearOpMode {
             }
             if(object == 2){
 
+               pidDrive(1.0,0.0,0.0, 5000);
+
+
             }
             if(object == 3){
 
@@ -290,7 +293,7 @@ public class BetterAutoPowerPlay extends LinearOpMode {
         eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //
 //        eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -306,6 +309,59 @@ public class BetterAutoPowerPlay extends LinearOpMode {
         eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         eMotor.setPower(Math.abs(0.5));
+    }
+
+    private void pidDrive (double forward, double strafe, double turn, int target){
+        /*
+
+         * Proportional Integral Derivative Controller
+
+         */
+
+       double Kp = 1.0;
+       double Ki = 1.0;
+       double Kd = 1.0;
+
+       int reference = rightFront.getCurrentPosition() + target;
+
+       double integralSum = 0;
+
+       int lastError = 0;
+
+       boolean setPointIsNotReached = true;
+
+// Elapsed timer class from SDK, please use it, it's epic
+        ElapsedTime timer = new ElapsedTime();
+
+        while (setPointIsNotReached) {
+
+
+            // obtain the encoder position
+            int encoderPosition = rightFront.getCurrentPosition();
+            // calculate the error
+           int error = reference - encoderPosition;
+
+            // rate of change of the error
+           double derivative = (error - lastError) / timer.seconds();
+
+            // sum of all error over time
+            integralSum = integralSum + (error * timer.seconds());
+
+           double out = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+
+            drive(forward * out,strafe * out,turn * out);
+
+            lastError = error;
+
+
+            // reset the timer for next time
+            timer.reset();
+
+            setPointIsNotReached = Math.abs(error) > 10;
+
+        }
+        drive(0.0,0.0,0.0);
+
     }
 
     public void drive(double forward, double strafe, double turn) {
