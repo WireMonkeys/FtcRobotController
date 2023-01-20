@@ -233,7 +233,13 @@ public class BetterAutoPowerPlay extends LinearOpMode {
             }
             if(object == 2){
 
-               pidDrive(1.0,0.0,0.0, 5000);
+                pidDrive(0.0,0.75,0.002,1250);
+                moveArm(4088);
+                pidDrive(0.5,0.0,0.0, -2000);
+                pidDrive(0.0,0.0,0.25,250);
+                pidDrive(0.5,0.0,0.0,-300);
+
+                hand.setPosition(0.3095);
 
 
             }
@@ -293,7 +299,8 @@ public class BetterAutoPowerPlay extends LinearOpMode {
         eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
 //        eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //
 //        eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -318,9 +325,9 @@ public class BetterAutoPowerPlay extends LinearOpMode {
 
          */
 
-       double Kp = 1.0;
-       double Ki = 1.0;
-       double Kd = 1.0;
+       double Kp = -0.75;
+       double Ki = 0;
+       double Kd = 0;
 
        int reference = rightFront.getCurrentPosition() + target;
 
@@ -333,7 +340,7 @@ public class BetterAutoPowerPlay extends LinearOpMode {
 // Elapsed timer class from SDK, please use it, it's epic
         ElapsedTime timer = new ElapsedTime();
 
-        while (setPointIsNotReached) {
+        while (opModeIsActive() && setPointIsNotReached) {
 
 
             // obtain the encoder position
@@ -347,11 +354,16 @@ public class BetterAutoPowerPlay extends LinearOpMode {
             // sum of all error over time
             integralSum = integralSum + (error * timer.seconds());
 
-           double out = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+           double out = (Kp * error); // + (Ki * integralSum) + (Kd * derivative);
 
-            drive(forward * out,strafe * out,turn * out);
+            out = Range.clip(out, -1, 1);
+
+            drive(forward * out,-strafe * out,-turn * out);
 
             lastError = error;
+
+            telemetry.addData("encoderPos", rightFront.getCurrentPosition());
+            telemetry.update();
 
 
             // reset the timer for next time
