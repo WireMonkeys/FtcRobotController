@@ -237,9 +237,31 @@ public class BetterAutoPowerPlay extends LinearOpMode {
                 moveArm(4088);
                 pidDrive(0.5,0.0,0.0, -2000);
                 pidDrive(0.0,0.0,0.25,250);
-                pidDrive(0.5,0.0,0.0,-300);
+                pidDrive(0.5,0.0,0.0,-350);
 
                 hand.setPosition(0.3095);
+                sleep(1000);
+
+                moveArm(775);
+
+                pidDrive(0.5,0.0,0.0,100);
+                pidDrive(0.0,0.0,0.25,575);
+                pidDrive(0.5,0.0,0.0,-1700);
+
+                hand.setPosition(0.656);
+                sleep(500);
+
+                moveArm(4088);
+                sleep(750);
+
+                pidDrive(0.5,0.0,0.0,1700);
+                pidDrive(0.0,0.0,0.25,-600);
+                pidDrive(0.5,0.0,0.0,-100);
+
+                hand.setPosition(0.3095);
+                sleep(1000);
+
+
 
 
             }
