@@ -142,9 +142,10 @@ public class BetterAutoPowerPlay extends LinearOpMode {
 
         /** Wait for the game to begin */
 
+        hand.setPosition(0.575);
+
         waitForStart();
 
-        hand.setPosition(0.656);
 
 
 
@@ -233,39 +234,58 @@ public class BetterAutoPowerPlay extends LinearOpMode {
             }
             if(object == 2){
 
-                pidDrive(0.0,0.75,0.002,1250);
+                hand.setPosition(0.6);
+                pidDrive(0.0,0.75,-0.01,1000);
                 moveArm(4088);
-                pidDrive(0.5,0.0,0.0, -2000);
-                pidDrive(0.0,0.0,0.25,250);
-                pidDrive(0.5,0.0,0.0,-350);
+                pidDrive(0.75,0.0,0.0, -2000);
+                pidDrive(0.0,0.0,0.25,290);
+                pidDrive(0.5,0.0,0.0,-290);
+
+                sleep(1000);
 
                 hand.setPosition(0.3095);
                 sleep(1000);
 
-                moveArm(775);
+                pidDrive(0.5,0.0,0.0,175);
 
-                pidDrive(0.5,0.0,0.0,100);
-                pidDrive(0.0,0.0,0.25,575);
-                pidDrive(0.5,0.0,0.0,-1700);
+                moveArm(650);
 
-                hand.setPosition(0.656);
+                pidDrive(0.0,0.0,0.25,550);
+                pidDrive(0.5,0.0,0.0025,-1875);
+
+                hand.setPosition(0.6);
                 sleep(500);
 
                 moveArm(4088);
-                sleep(750);
-
-                pidDrive(0.5,0.0,0.0,1700);
-                pidDrive(0.0,0.0,0.25,-600);
-                pidDrive(0.5,0.0,0.0,-100);
-
-                hand.setPosition(0.3095);
                 sleep(1000);
+//
+//                pidDrive(0.5,0.0,0.0,1800);
+//                pidDrive(0.0,0.0,0.25,-585);
+//                pidDrive(0.5,0.0,0.0,-100);
+//
+//                hand.setPosition(0.3095);
+//                sleep(1000);
 
 
 
 
             }
             if(object == 3){
+
+                pidDrive(0.0,0.5,-0.025,-300);
+                pidDrive(0.5,0.0,0.0,-2500);
+                moveArm(-4000);
+                pidDrive(0.5,0.0,0.0,250);
+                pidDrive(0.0,0.0,0.25,-230);
+                pidDrive(0.5,0.0,0.0,-250);
+                sleep(3000);
+                hand.setPosition(0.3095);
+                sleep(3000);
+                moveArm(0);
+                pidDrive(0.5,0.0,0.0,275);
+                pidDrive(0.0,0.0,0.25,400);
+                pidDrive(0.0,0.5,0.0,1200);
+
 
             }
         }
@@ -331,13 +351,13 @@ public class BetterAutoPowerPlay extends LinearOpMode {
     private void moveArm(int eMotors) {
 
 
-        eMotors = Range.clip(eMotors, 0, 4088);
+        eMotors = Range.clip(eMotors, -4088, 0);
 
         eMotor.setTargetPosition(eMotors);
 
         eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        eMotor.setPower(Math.abs(0.5));
+        eMotor.setPower(Math.abs(0.75));
     }
 
     private void pidDrive (double forward, double strafe, double turn, int target){
@@ -347,7 +367,7 @@ public class BetterAutoPowerPlay extends LinearOpMode {
 
          */
 
-       double Kp = -0.75;
+       double Kp = -0.5;
        double Ki = 0;
        double Kd = 0;
 
