@@ -65,13 +65,13 @@ public class TheBestAuto extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "PowerPlayDos.tflite";
+    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
-            "Android",
-            "Apple",
-            "Window"
+            "1 Bolt",
+            "2 Bulb",
+            "3 Panel"
     };
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -142,7 +142,7 @@ public class TheBestAuto extends LinearOpMode {
 
         /** Wait for the game to begin */
 
-        hand.setPosition(0.6);
+        hand.setPosition(0.565);
 
         waitForStart();
 
@@ -161,15 +161,15 @@ public class TheBestAuto extends LinearOpMode {
                         // step through the list of recognitions and display image position/size information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
                         for (Recognition recognition : updatedRecognitions) {
-                            if(recognition.getLabel() == "Window"){
+                            if(recognition.getLabel() == "1 Bolt"){
                                 object = 1;
                             }
 
-                            if(recognition.getLabel() == "Apple"){
+                            if(recognition.getLabel() == "2 Bulb"){
                                 object = 2;
                             }
 
-                            if(recognition.getLabel() == "Android"){
+                            if(recognition.getLabel() == "3 Panel"){
                                 object = 3;
                             }
 
@@ -240,7 +240,7 @@ public class TheBestAuto extends LinearOpMode {
 
                 moveArm(0);
 
-                pidDrive(0.0,0.5,-0.02,-1500);
+                pidDrive(0.0,0.5,-0.02,-1450);
 
 
 

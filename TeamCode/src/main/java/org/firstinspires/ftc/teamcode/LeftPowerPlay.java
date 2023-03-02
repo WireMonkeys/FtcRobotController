@@ -140,11 +140,11 @@ public class LeftPowerPlay extends LinearOpMode {
             tfod.setZoom(1.0, 16.0/9.0);
         }
 
+        hand.setPosition(0.565);
+
         /** Wait for the game to begin */
 
         waitForStart();
-
-        hand.setPosition(0.6);
 
 
 
@@ -185,7 +185,7 @@ public class LeftPowerPlay extends LinearOpMode {
 
                 pidDrive(0.5,0.0,0.0,-1250);
                 moveArm(-2849);
-                pidDrive(0.0,0.0,0.25,625);
+                pidDrive(0.0,0.0,0.25,600);
                 pidDrive(0.25,0.0,0.0,-350);
 
                 sleep(1000);
@@ -197,7 +197,7 @@ public class LeftPowerPlay extends LinearOpMode {
 
                 moveArm(0);
 
-                pidDrive(0.0,0.5,0.0,1500);
+                pidDrive(0.0,0.5,0.0,1300);
 
 
             }

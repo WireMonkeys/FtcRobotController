@@ -124,14 +124,14 @@ public class DriveBaseTwentyTwo extends OpMode
         hand.setPosition(handStick);
         wrist.setPosition(wristStick);
 
-        handStick = handStick + (-gamepad2.right_stick_x * 0.005);
-        wristStick = wristStick + (-gamepad2.left_stick_x * 0.005);
+        handStick = handStick + (-gamepad2.right_stick_x * 0.01);
+        wristStick = wristStick + (-gamepad2.left_stick_x * 0.01);
 
 
 
 
         wristStick = Range.clip(wristStick, 0.0d, 1.0d);
-        handStick = Range.clip(handStick, 0.3096d, 0.625d);
+        handStick = Range.clip(handStick, 0.3096d, 0.57d);
 
         telemetry.addData("hand pos",hand.getPosition());
         telemetry.addData("wrist pos",wrist.getPosition());
@@ -151,10 +151,10 @@ public class DriveBaseTwentyTwo extends OpMode
         }
 
         if(gamepad2.right_bumper){
-            eMotors = eMotors + 10;
+            eMotors = eMotors + 20;
         }
         else if(gamepad2.left_bumper){
-            eMotors = eMotors - 10;
+            eMotors = eMotors - 20;
         }
         eMotors = Range.clip(eMotors,-4300, 0);
 
@@ -186,10 +186,10 @@ public class DriveBaseTwentyTwo extends OpMode
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
-        leftFront.setPower(v1/1.5);
-        rightFront.setPower(v2/1.5);
-        leftRear.setPower(v3/1.5);
-        rightRear.setPower(v4/1.5);
+        leftFront.setPower(v1/1.25);
+        rightFront.setPower(v2/1.25);
+        leftRear.setPower(v3/1.25);
+        rightRear.setPower(v4/1.25);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
 
