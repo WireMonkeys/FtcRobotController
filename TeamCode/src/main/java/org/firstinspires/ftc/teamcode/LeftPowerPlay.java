@@ -184,7 +184,7 @@ public class LeftPowerPlay extends LinearOpMode {
             if(object == 3){
 
                 pidDrive(0.5,0.0,0.0,-1250);
-                moveArm(-2849);
+                moveArm(-3000);
                 pidDrive(0.0,0.0,0.25,600);
                 pidDrive(0.25,0.0,0.0,-350);
 
@@ -204,7 +204,7 @@ public class LeftPowerPlay extends LinearOpMode {
             if(object == 2){
 
                 pidDrive(0.5,0.0,0.0,-1250);
-                moveArm(-2849);
+                moveArm(-3000);
                 pidDrive(0.0,0.0,0.25,625);
                 pidDrive(0.25,0.0,0.0,-350);
 
