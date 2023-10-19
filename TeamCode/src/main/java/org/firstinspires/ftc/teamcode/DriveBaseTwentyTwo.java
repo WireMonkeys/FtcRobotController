@@ -50,6 +50,7 @@ public class DriveBaseTwentyTwo extends OpMode
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
     private DcMotor eMotor = null;
+    private DcMotor pivot = null;
 
     private Servo   wrist;
     private Servo   hand;
@@ -76,6 +77,7 @@ public class DriveBaseTwentyTwo extends OpMode
         eMotor = hardwareMap.get(DcMotor.class, "eMotor");
         hand = hardwareMap.get(Servo.class, "hand");
         wrist = hardwareMap.get(Servo.class, "wrist");
+        pivot = hardwareMap.get(DcMotor.class, "pivot");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -84,6 +86,10 @@ public class DriveBaseTwentyTwo extends OpMode
         leftRear.setDirection(DcMotor.Direction.FORWARD);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
 
+
+        pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        pivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -114,6 +120,7 @@ public class DriveBaseTwentyTwo extends OpMode
     double handStick = 0.3059;
     double wristStick = 0.3577;
     int eMotors = 0;
+    int pivotMotor = 0;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -165,6 +172,23 @@ public class DriveBaseTwentyTwo extends OpMode
         eMotor.setPower(Math.abs(1.0));
 
 
+        pivot.setTargetPosition(pivotMotor);
+
+        pivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        pivot.setPower(Math.abs(1.0));
+
+        pivotMotor = Range.clip(pivotMotor,0, 13000);
+
+        if(gamepad2.dpad_up){
+            pivotMotor = pivotMotor + 20;
+        }
+        else if(gamepad2.dpad_down){
+            pivotMotor = pivotMotor - 20;
+        }
+
+
+
 
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
 
@@ -172,6 +196,8 @@ public class DriveBaseTwentyTwo extends OpMode
 
         telemetry.addData("Currently at",  " at %7d",
                 eMotor.getCurrentPosition());
+        telemetry.addData("Currently at",  " at %7d",
+                pivot.getCurrentPosition());
         telemetry.addData("Currently at",  " at %7d",
                 leftRear.getCurrentPosition());
 
