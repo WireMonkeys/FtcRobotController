@@ -51,9 +51,13 @@ public class DriveBaseTwentyTwo extends OpMode
     private DcMotor rightRear = null;
     private DcMotor eMotor = null;
     private DcMotor pivot = null;
+    private DcMotor reMotor = null;
 
     private Servo   wrist;
     private Servo   hand;
+    private Servo   plane;
+    private Servo   elbow;
+    private Servo   relbow;
 
 
 //    boolean rampUp = true;
@@ -75,9 +79,14 @@ public class DriveBaseTwentyTwo extends OpMode
         leftRear  = hardwareMap.get(DcMotor.class, "backLeft");
         rightRear = hardwareMap.get(DcMotor.class, "backRight");
         eMotor = hardwareMap.get(DcMotor.class, "eMotor");
+        reMotor = hardwareMap.get(DcMotor.class, "reMotor");
+        pivot = hardwareMap.get(DcMotor.class, "pivot");
         hand = hardwareMap.get(Servo.class, "hand");
         wrist = hardwareMap.get(Servo.class, "wrist");
-        pivot = hardwareMap.get(DcMotor.class, "pivot");
+        plane = hardwareMap.get(Servo.class, "planes");
+        elbow = hardwareMap.get(Servo.class, "elbow");
+        relbow = hardwareMap.get(Servo.class, "relbow");
+
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -94,6 +103,10 @@ public class DriveBaseTwentyTwo extends OpMode
         eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        reMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        reMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         telemetry.addData("Starting at",  "%7d",
@@ -117,8 +130,10 @@ public class DriveBaseTwentyTwo extends OpMode
     public void start() {
         runtime.reset();
     }
-    double handStick = 0.3059;
+    double handStick = 0.83;
     double wristStick = 0.3577;
+    double planes = 0.0;
+    double elbowPad = 0.25;
     int eMotors = 0;
     int pivotMotor = 0;
     /*
@@ -130,18 +145,25 @@ public class DriveBaseTwentyTwo extends OpMode
 
         hand.setPosition(handStick);
         wrist.setPosition(wristStick);
+        plane.setPosition(planes);
+        elbow.setPosition(elbowPad);
+        relbow.setPosition(elbowPad);
+
 
         handStick = handStick + (-gamepad2.right_stick_x * 0.01);
         wristStick = wristStick + (-gamepad2.left_stick_x * 0.01);
 
+        planes = planes + ((gamepad2.right_trigger * 0.005) - (gamepad2.left_trigger * 0.005));
 
-
-
+        planes = Range.clip(planes, 0.0d,1.0d);
         wristStick = Range.clip(wristStick, 0.0d, 1.0d);
-        handStick = Range.clip(handStick, 0.3096d, 0.57d);
+        handStick = Range.clip(handStick, 0.0d, 1.0d);
+        elbowPad = Range.clip(elbowPad, 0.25d, 0.75d);
 
         telemetry.addData("hand pos",hand.getPosition());
         telemetry.addData("wrist pos",wrist.getPosition());
+        telemetry.addData("elbow pos",elbow.getPosition());
+        telemetry.addData("plane pos",planes);
 
 
         if(gamepad2.a){
@@ -166,10 +188,13 @@ public class DriveBaseTwentyTwo extends OpMode
         eMotors = Range.clip(eMotors,-4300, 0);
 
         eMotor.setTargetPosition(eMotors);
+        reMotor.setTargetPosition(-eMotors);
 
         eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        reMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         eMotor.setPower(Math.abs(1.0));
+        reMotor.setPower(Math.abs(1.0));
 
 
         pivot.setTargetPosition(pivotMotor);
@@ -178,13 +203,22 @@ public class DriveBaseTwentyTwo extends OpMode
 
         pivot.setPower(Math.abs(1.0));
 
-        pivotMotor = Range.clip(pivotMotor,0, 13000);
+        pivotMotor = Range.clip(pivotMotor, 0, 11100);
+
 
         if(gamepad2.dpad_up){
             pivotMotor = pivotMotor + 20;
         }
         else if(gamepad2.dpad_down){
             pivotMotor = pivotMotor - 20;
+        }
+
+
+        if(gamepad2.dpad_left){
+            elbowPad = elbowPad - 0.0005;
+        }
+        else if(gamepad2.dpad_right){
+            elbowPad = elbowPad + 0.0005;
         }
 
 
@@ -212,10 +246,10 @@ public class DriveBaseTwentyTwo extends OpMode
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
-        leftFront.setPower(v1/1.25);
-        rightFront.setPower(v2/1.25);
-        leftRear.setPower(v3/1.25);
-        rightRear.setPower(v4/1.25);
+        leftFront.setPower(v1/-1.25);
+        rightFront.setPower(v2/-1.25);
+        leftRear.setPower(v3/-1.25);
+        rightRear.setPower(v4/-1.25);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
 
