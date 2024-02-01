@@ -52,6 +52,7 @@ public class DriveBaseTwentyTwo extends OpMode
     private DcMotor eMotor = null;
     private DcMotor pivot = null;
     private DcMotor reMotor = null;
+    private DcMotor intake = null;
 
     private Servo   wrist;
     private Servo   hand;
@@ -81,6 +82,7 @@ public class DriveBaseTwentyTwo extends OpMode
         eMotor = hardwareMap.get(DcMotor.class, "eMotor");
         reMotor = hardwareMap.get(DcMotor.class, "reMotor");
         pivot = hardwareMap.get(DcMotor.class, "pivot");
+        intake = hardwareMap.get(DcMotor.class, "intake");
         hand = hardwareMap.get(Servo.class, "hand");
         wrist = hardwareMap.get(Servo.class, "wrist");
         plane = hardwareMap.get(Servo.class, "planes");
@@ -165,6 +167,8 @@ public class DriveBaseTwentyTwo extends OpMode
         telemetry.addData("elbow pos",elbow.getPosition());
         telemetry.addData("plane pos",planes);
 
+        intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+
 
         if(gamepad2.a){
             eMotors = -50;
@@ -215,10 +219,10 @@ public class DriveBaseTwentyTwo extends OpMode
 
 
         if(gamepad2.dpad_left){
-            elbowPad = elbowPad - 0.0005;
+            elbowPad = elbowPad - 0.005;
         }
         else if(gamepad2.dpad_right){
-            elbowPad = elbowPad + 0.0005;
+            elbowPad = elbowPad + 0.005;
         }
 
 
