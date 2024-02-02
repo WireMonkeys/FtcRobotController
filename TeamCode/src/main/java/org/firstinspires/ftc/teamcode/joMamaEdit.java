@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,7 +21,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
-public class joMama extends OpMode {
+public class joMamaEdit extends LinearOpMode {
 
     OpenCvWebcam webcam1 = null;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -40,19 +39,122 @@ public class joMama extends OpMode {
     private Servo   plane;
     private Servo   elbow;
     private Servo   relbow;
+    boolean left = false;
     boolean center = false;
     boolean right = false;
-    boolean left = false;
+
 
     @Override
-    public void init() {
+    public void runOpMode() {
+
+        initRobot();
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
+        int cameraMonitorViewId= hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
+        webcam1.setPipeline(new examplePipeline());
+
+        webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            public void onOpened() {
+                webcam1.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            public void onError(int errorCode){
+
+            }
+        });
 
 
-        telemetry.addData("Status", "Initialized");
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+//        waitForStart();
+        while (!isStarted() && !isStopRequested()) {
+            telemetry.addLine("Simon is cool");
+        }
+        telemetry.addLine("Yo I'm running here!");
+            webcam1.closeCameraDevice();
+        if (center){
+            telemetry.addLine("center");
+            sleep(10000);
+       }
+
+        if (right){
+            telemetry.addLine("right!!!");
+            sleep(10000);
+        }
+        if (left){
+            telemetry.addLine("left!!!");
+            sleep(10000);
+        }
+
+    }
+
+
+    class examplePipeline extends OpenCvPipeline {
+        Mat YCbCr = new Mat();
+        Mat leftCrop;
+        Mat rightCrop;
+        double leftavgfin;
+        double rightavgfin;
+        Mat outPut = new Mat();
+        Scalar rectColor= new Scalar(255.0, 0.0, 0.0);
+
+
+        public Mat processFrame(Mat input){
+
+            Imgproc.cvtColor(input,YCbCr,Imgproc.COLOR_RGB2YCrCb);
+
+            Rect leftRect = new Rect(65, 180, 100, 50);
+            Rect rightRect = new Rect(360, 180, 100, 50);
+
+            input.copyTo(outPut);
+            Imgproc.rectangle(outPut, leftRect, rectColor, 2);
+            Imgproc.rectangle(outPut, rightRect, rectColor, 2);
+
+            leftCrop = YCbCr.submat(leftRect);
+            rightCrop = YCbCr.submat(rightRect);
+
+            Core.extractChannel(leftCrop, leftCrop, 1);
+            Core.extractChannel(rightCrop, rightCrop, 1);
+
+            Scalar leftavg = Core.mean(leftCrop);
+            Scalar rightavg = Core.mean(rightCrop);
+
+            leftavgfin = leftavg.val[0];
+            rightavgfin = rightavg.val[0];
+
+
+               if (leftavgfin > 150) {
+                   telemetry.addLine("LEFT!!!");
+                   center = true;
+                   left = false;
+                   right = false;
+               }
+               else if ((rightavgfin > 140)) {
+                   telemetry.addLine("RIGHT!!!");
+                   right = true;
+                   left = false;
+                   center = false;
+               }
+               else {
+                   telemetry.addLine("BOOOOOOO!!!");
+                   left = true;
+                   center = false;
+                   right = false;
+               }
+               telemetry.addData("Right", "%f", rightavgfin);
+               telemetry.addData("Left", "%f", leftavgfin);
+
+
+
+               return (outPut);
+
+        }
+
+    }
+
+
+
+    private void initRobot() {
         leftFront  = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
         leftRear  = hardwareMap.get(DcMotor.class, "backLeft");
@@ -88,99 +190,13 @@ public class joMama extends OpMode {
 
         reMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
-        int cameraMonitorViewId= hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        webcam1.setPipeline(new examplePipeline());
-
-        webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            public void onOpened() {
-                webcam1.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            public void onError(int errorCode){
-
-            }
-        });
+//        eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    @Override
-    public void loop(){
-        webcam1.closeCameraDevice();
-        if (center){
-            telemetry.addLine("center");
-            pidDrive(1.0,0.0,0.0, 1000);
-        }
-        if (left){
-            telemetry.addLine("left");
 
-        }
-        if (right){
-            telemetry.addLine("right");
-        }
-
-    }
-
-    class examplePipeline extends OpenCvPipeline {
-        Mat YCbCr = new Mat();
-        Mat leftCrop;
-        Mat rightCrop;
-        double leftavgfin;
-        double rightavgfin;
-        Mat outPut = new Mat();
-        Scalar rectColor= new Scalar(255.0, 0.0, 0.0);
-
-
-        public Mat processFrame(Mat input){
-
-            Imgproc.cvtColor(input,YCbCr,Imgproc.COLOR_RGB2YCrCb);
-
-            Rect leftRect = new Rect(65, 180, 100, 50);
-            Rect rightRect = new Rect(360, 180, 100, 50);
-
-            input.copyTo(outPut);
-            Imgproc.rectangle(outPut, leftRect, rectColor, 2);
-            Imgproc.rectangle(outPut, rightRect, rectColor, 2);
-
-            leftCrop = YCbCr.submat(leftRect);
-            rightCrop = YCbCr.submat(rightRect);
-
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
-
-            Scalar leftavg = Core.mean(leftCrop);
-            Scalar rightavg = Core.mean(rightCrop);
-
-            leftavgfin = leftavg.val[0];
-            rightavgfin = rightavg.val[0];
-
-            if (leftavgfin  > 150){
-                telemetry.addLine("LEFT!!!");
-                center = true;
-                right = false;
-                left = false;
-            }
-            else if (rightavgfin > 140){
-                telemetry.addLine("RIGHT!!!");
-                right = true;
-                center = false;
-                left = false;
-            }
-            else {
-                telemetry.addLine("BOOOOOOO!!!");
-                left = true;
-                right = false;
-                center = false;
-            }
-            telemetry.addData("Right",  "%f", rightavgfin);
-            telemetry.addData("Left",  "%f", leftavgfin);
-
-
-            return(outPut);
-
-        }
-    }
     public void drive(double forward, double strafe, double turn) {
         double r = Math.hypot(strafe, forward);
         double robotAngle = Math.atan2(forward, strafe) - Math.PI / 4;
@@ -194,8 +210,6 @@ public class joMama extends OpMode {
         rightFront.setPower(v2/-1.25);
         leftRear.setPower(v3/-1.25);
         rightRear.setPower(v4/-1.25);
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
 
 
 
@@ -223,7 +237,7 @@ public class joMama extends OpMode {
 // Elapsed timer class from SDK, please use it, it's epic
         ElapsedTime timer = new ElapsedTime();
 
-        while (setPointIsNotReached) {
+        while (opModeIsActive() && setPointIsNotReached) {
 
 
             // obtain the encoder position
@@ -245,8 +259,6 @@ public class joMama extends OpMode {
 
             lastError = error;
 
-            telemetry.addData("encoderPos", rightFront.getCurrentPosition());
-            telemetry.update();
 
 
             // reset the timer for next time
@@ -254,8 +266,8 @@ public class joMama extends OpMode {
 
             setPointIsNotReached = Math.abs(error) > 10;
 
-
         }
         drive(0.0,0.0,0.0);
+
     }
 }

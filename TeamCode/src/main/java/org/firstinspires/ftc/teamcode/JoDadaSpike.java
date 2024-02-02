@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,7 +21,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
-public class joMama extends OpMode {
+public class JoDadaSpike extends LinearOpMode {
 
     OpenCvWebcam webcam1 = null;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -45,7 +44,8 @@ public class joMama extends OpMode {
     boolean left = false;
 
     @Override
-    public void init() {
+    public void runOpMode() {
+
 
 
         telemetry.addData("Status", "Initialized");
@@ -103,24 +103,43 @@ public class joMama extends OpMode {
 
             }
         });
-    }
-
-    @Override
-    public void loop(){
+        waitForStart();
         webcam1.closeCameraDevice();
         if (center){
             telemetry.addLine("center");
-            pidDrive(1.0,0.0,0.0, 1000);
+            pidDrive(1.0,0.0,0.0, -1000);
+            sleep(100);
+            intake.setPower(-0.3);
+            sleep(1000);
+            pidDrive(0.5,0.0,0.0,500);
         }
         if (left){
             telemetry.addLine("left");
-
+            pidDrive(1.0,0.0,0.0, -800);
+            sleep(100);
+            pidDrive(0.0,0.0,0.5,-600);
+            pidDrive(0.3,0.0,0.0,-425);
+            intake.setPower(-0.2);
+            sleep(1000);
+            pidDrive(0.5,0.0,0.0,425);
+            pidDrive(0.0,0.0,0.5,600);
         }
         if (right){
             telemetry.addLine("right");
+            pidDrive(1.0,0.0,0.0, -800);
+            sleep(100);
+            pidDrive(0.0,0.0,0.5,250);
+            pidDrive(0.3,0.0,0.0,-500);
+            intake.setPower(-0.3);
+            sleep(2000);
+            pidDrive(0.5,0.0,0.0,500);
         }
-
     }
+
+
+
+
+
 
     class examplePipeline extends OpenCvPipeline {
         Mat YCbCr = new Mat();

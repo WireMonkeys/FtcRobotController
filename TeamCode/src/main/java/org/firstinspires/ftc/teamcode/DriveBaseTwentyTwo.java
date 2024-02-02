@@ -132,10 +132,10 @@ public class DriveBaseTwentyTwo extends OpMode
     public void start() {
         runtime.reset();
     }
-    double handStick = 0.83;
-    double wristStick = 0.3577;
+    double handStick = 0.994;
+    double wristStick = 0.0;
     double planes = 0.0;
-    double elbowPad = 0.25;
+    double elbowPad = 0.75;
     int eMotors = 0;
     int pivotMotor = 0;
     /*
@@ -158,7 +158,7 @@ public class DriveBaseTwentyTwo extends OpMode
         planes = planes + ((gamepad2.right_trigger * 0.005) - (gamepad2.left_trigger * 0.005));
 
         planes = Range.clip(planes, 0.0d,1.0d);
-        wristStick = Range.clip(wristStick, 0.0d, 1.0d);
+        wristStick = Range.clip(wristStick, 0.025d, 0.914d);
         handStick = Range.clip(handStick, 0.0d, 1.0d);
         elbowPad = Range.clip(elbowPad, 0.25d, 0.75d);
 
@@ -168,7 +168,6 @@ public class DriveBaseTwentyTwo extends OpMode
         telemetry.addData("plane pos",planes);
 
         intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
-
 
         if(gamepad2.a){
             eMotors = -50;
@@ -189,7 +188,7 @@ public class DriveBaseTwentyTwo extends OpMode
         else if(gamepad2.left_bumper){
             eMotors = eMotors - 20;
         }
-        eMotors = Range.clip(eMotors,-4300, 0);
+        eMotors = Range.clip(eMotors,-3360, 0);
 
         eMotor.setTargetPosition(eMotors);
         reMotor.setTargetPosition(-eMotors);
@@ -219,10 +218,10 @@ public class DriveBaseTwentyTwo extends OpMode
 
 
         if(gamepad2.dpad_left){
-            elbowPad = elbowPad - 0.005;
+            elbowPad = elbowPad - 0.0025;
         }
         else if(gamepad2.dpad_right){
-            elbowPad = elbowPad + 0.005;
+            elbowPad = elbowPad + 0.0025;
         }
 
 

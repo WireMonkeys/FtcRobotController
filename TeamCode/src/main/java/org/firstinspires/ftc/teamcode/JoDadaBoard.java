@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,14 +14,17 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.ArrayList;
+
 @Autonomous
-public class joMama extends OpMode {
+public class JoDadaBoard extends LinearOpMode {
 
     OpenCvWebcam webcam1 = null;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -44,50 +46,26 @@ public class joMama extends OpMode {
     boolean right = false;
     boolean left = false;
 
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
+    static final double FEET_PER_METER = 3.28084;
+
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    // UNITS ARE METERS
+    double tagsize = 0.166;
+
+    int ID_TAG_OF_INTEREST = 18;// Tag ID 18 from the 36h11 family
+
+    AprilTagDetection tagOfInterest = null;
+
     @Override
-    public void init() {
+    public void runOpMode() {
 
-
-        telemetry.addData("Status", "Initialized");
-
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        leftFront  = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        leftRear  = hardwareMap.get(DcMotor.class, "backLeft");
-        rightRear = hardwareMap.get(DcMotor.class, "backRight");
-        eMotor = hardwareMap.get(DcMotor.class, "eMotor");
-        reMotor = hardwareMap.get(DcMotor.class, "reMotor");
-        pivot = hardwareMap.get(DcMotor.class, "pivot");
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        hand = hardwareMap.get(Servo.class, "hand");
-        wrist = hardwareMap.get(Servo.class, "wrist");
-        plane = hardwareMap.get(Servo.class, "planes");
-        elbow = hardwareMap.get(Servo.class, "elbow");
-        relbow = hardwareMap.get(Servo.class, "relbow");
-
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
-
-
-        pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        pivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        reMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        reMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        initRobot();
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
         int cameraMonitorViewId= hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -103,24 +81,55 @@ public class joMama extends OpMode {
 
             }
         });
-    }
-
-    @Override
-    public void loop(){
+        waitForStart();
         webcam1.closeCameraDevice();
+        aprilTagInit();
         if (center){
             telemetry.addLine("center");
-            pidDrive(1.0,0.0,0.0, 1000);
+            pidDrive(1.0,0.0,0.0, -1000);
+            sleep(100);
+            intake.setPower(-0.3);
+            sleep(1000);
+            pidDrive(0.5,0.0,0.0,500);
         }
-        if (left){
-            telemetry.addLine("left");
+        else if (left){
+            pidDrive(1.0,0.0,0.0, -800);
+            sleep(100);
+            pidDrive(0.0,0.0,0.5,-600);
+            pidDrive(0.3,0.0,0.0,-425);
+            intake.setPower(-0.2);
+            sleep(1000);
+            pidDrive(0.5,0.0,0.0,425);
+            pidDrive(0.0,0.0,0.5,1450);
+            sleep(10000);
 
         }
-        if (right){
+       else if (right){
             telemetry.addLine("right");
+            pidDrive(1.0,0.0,0.0, -800);
+            sleep(100);
+            pidDrive(0.0,0.0,0.5,250);
+            pidDrive(0.3,0.0,0.0,-500);
+            intake.setPower(-0.3);
+            sleep(2000);
+            pidDrive(0.5,0.0,0.0,500);
+            pidDrive(0.0,0.0,0.5,-250);
+        }
+
+        while (!isStopRequested()){
+            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
+            for(AprilTagDetection tag : currentDetections){
+                tagToTelemetry(tag);
+
+            }
         }
 
     }
+
+
+
+
+
 
     class examplePipeline extends OpenCvPipeline {
         Mat YCbCr = new Mat();
@@ -190,15 +199,82 @@ public class joMama extends OpMode {
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
-        leftFront.setPower(v1/-1.25);
-        rightFront.setPower(v2/-1.25);
-        leftRear.setPower(v3/-1.25);
-        rightRear.setPower(v4/-1.25);
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
+        leftFront.setPower(v1 / -1.25);
+        rightFront.setPower(v2 / -1.25);
+        leftRear.setPower(v3 / -1.25);
+        rightRear.setPower(v4 / -1.25);
 
 
+    }
 
+    private void aprilTagInit(){
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam1 = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam1"), cameraMonitorViewId);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
+        webcam1.setPipeline(aprilTagDetectionPipeline);
+        webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webcam1.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+
+            }
+        });
+    }
+
+    void tagToTelemetry(AprilTagDetection detection)
+    {
+        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+//        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+//        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+//        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+    }
+
+    private void initRobot(){
+        leftFront  = hardwareMap.get(DcMotor.class, "frontLeft");
+        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
+        leftRear  = hardwareMap.get(DcMotor.class, "backLeft");
+        rightRear = hardwareMap.get(DcMotor.class, "backRight");
+        eMotor = hardwareMap.get(DcMotor.class, "eMotor");
+        reMotor = hardwareMap.get(DcMotor.class, "reMotor");
+        pivot = hardwareMap.get(DcMotor.class, "pivot");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        hand = hardwareMap.get(Servo.class, "hand");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        plane = hardwareMap.get(Servo.class, "planes");
+        elbow = hardwareMap.get(Servo.class, "elbow");
+        relbow = hardwareMap.get(Servo.class, "relbow");
+
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.REVERSE);
+
+
+        pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        pivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        eMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        eMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        reMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        reMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void pidDrive (double forward, double strafe, double turn, int target){
@@ -245,8 +321,7 @@ public class joMama extends OpMode {
 
             lastError = error;
 
-            telemetry.addData("encoderPos", rightFront.getCurrentPosition());
-            telemetry.update();
+
 
 
             // reset the timer for next time
