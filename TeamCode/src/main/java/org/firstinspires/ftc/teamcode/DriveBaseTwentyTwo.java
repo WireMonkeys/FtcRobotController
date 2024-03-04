@@ -183,15 +183,15 @@ public class DriveBaseTwentyTwo extends OpMode
         }
 
         if(gamepad2.right_bumper){
-            eMotors = eMotors + 20;
-        }
-        else if(gamepad2.left_bumper){
             eMotors = eMotors - 20;
         }
-        eMotors = Range.clip(eMotors,-3360, 0);
+        else if(gamepad2.left_bumper){
+            eMotors = eMotors + 20;
+        }
+        eMotors = Range.clip(eMotors,0, 3360);
 
         eMotor.setTargetPosition(eMotors);
-        reMotor.setTargetPosition(-eMotors);
+        reMotor.setTargetPosition(eMotors);
 
         eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         reMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);

@@ -29,7 +29,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.ArrayList;
 
 @Autonomous
-public class JoDadaBoard extends LinearOpMode {
+public class JoDadaBlue extends LinearOpMode {
 
     OpenCvWebcam webcam1 = null;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -96,57 +96,57 @@ public class JoDadaBoard extends LinearOpMode {
             sleep(100);
             intake.setPower(-0.2);
             sleep(1000);
-            pidDrive(0.5,0.0,0.0,600);
-            pidDrive(0.0,0.75,0.0,200);
-            pidDrive(0.0,0.0,0.5,800);
-            runAprilTag(6);
-            sleep(2000);
-            wrist.setPosition(0.67);
-            sleep(2000);
+            pidDrive(0.5,0.0,0.0,300);
+            pidDrive(0.0,0.75,0.0,-200);
+            pidDrive(0.0,0.0,0.5,-800);
+            runAprilTag(3);
+            sleep(1000);
+            wrist.setPosition(0.68);
+            sleep(1000);
             hand.setPosition(0.6);
-            sleep(2000);
+            sleep(1000);
             pidDrive(0.0,1.0,0.0,1000);
+
         }
         else if (left){
+            telemetry.addLine("Left");
             pidDrive(0.5,0.0,0.0, -800);
             sleep(100);
-            pidDrive(0.0,0.0,0.5,-600);
+            pidDrive(0.0,0.0,0.5,-450);
             pidDrive(0.3,0.0,0.0,-425);
             intake.setPower(-0.2);
             sleep(1000);
             pidDrive(0.5,0.0,0.0,425);
-            pidDrive(0.0,0.0,0.5,1450);
-            runAprilTag(5);
-            sleep(2000);
+            pidDrive(0.0,0.0,0.5,-400);
+            runAprilTag(2);
+            sleep(1000);
             wrist.setPosition(0.67);
-            sleep(2000);
-            hand.setPosition(0.6);
-            sleep(2000);
+            sleep(1000);
+            hand.setPosition(0.61679);
+            sleep(1000);
             pidDrive(0.0,1.0,0.0,-500);
 
         }
-       else if (right){
+        else if (right){
             telemetry.addLine("right");
             pidDrive(1.0,0.0,0.0, -800);
             sleep(100);
             pidDrive(0.0,0.0,0.5,250);
-            pidDrive(0.3,0.0,0.0,-500);
+            pidDrive(0.3,0.0,0.0,-400);
             intake.setPower(-0.2);
             sleep(2000);
             pidDrive(0.5,0.0,0.0,500);
-            pidDrive(0.0,0.5,0.0,200);
-            pidDrive(0.0,0.0,0.5,400);
-            runAprilTag(6);
+            pidDrive(0.0,0.5,0.0,-200);
+            pidDrive(0.0,0.0,0.5,-1400);
+            runAprilTag(3);
             sleep(100);
             pidDrive(-0.05,0.75,0.0,300);
             sleep(1);
             wrist.setPosition(0.67);
-            sleep(2000);
-            hand.setPosition(0.6);
-            sleep(2000);
-            pidDrive(0.5,0.0,0.0,-50);
-
-            pidDrive(0.0,1.0,0.0,1000);
+            sleep(1000);
+            hand.setPosition(0.61679);
+            sleep(1000);
+            pidDrive(0.0,1.0,0.0,200);
 
         }
     }
@@ -170,8 +170,8 @@ public class JoDadaBoard extends LinearOpMode {
 
             Imgproc.cvtColor(input,YCbCr,Imgproc.COLOR_RGB2YCrCb);
 
-            Rect leftRect = new Rect(120, 200, 100, 50);
-            Rect rightRect = new Rect(430, 190, 100, 50);
+            Rect leftRect = new Rect(80, 200, 100, 50);
+            Rect rightRect = new Rect(400, 190, 100, 50);
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 2);
@@ -180,8 +180,8 @@ public class JoDadaBoard extends LinearOpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
+            Core.extractChannel(leftCrop, leftCrop, 2);
+            Core.extractChannel(rightCrop, rightCrop, 2);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
@@ -189,7 +189,9 @@ public class JoDadaBoard extends LinearOpMode {
             leftavgfin = leftavg.val[0];
             rightavgfin = rightavg.val[0];
 
-            if (leftavgfin  > 150){
+
+
+            if (leftavgfin  > 140){
                 telemetry.addLine("LEFT!!!");
                 center = true;
                 right = false;
@@ -300,28 +302,28 @@ public class JoDadaBoard extends LinearOpMode {
         });
     }
 
-   private AprilTagPose getFTCPose (AprilTagDetection detection){
-       if (detection.pose != null)   {
-           AprilTagPose ftcPose = new AprilTagPose();
+    private AprilTagPose getFTCPose (AprilTagDetection detection){
+        if (detection.pose != null)   {
+            AprilTagPose ftcPose = new AprilTagPose();
 
-           ftcPose.x =  detection.pose.x;
-           ftcPose.y =  detection.pose.z;
-           ftcPose.z = -detection.pose.y;
+            ftcPose.x =  detection.pose.x;
+            ftcPose.y =  detection.pose.z;
+            ftcPose.z = -detection.pose.y;
 
-           AngleUnit outputUnitsAngle = AngleUnit.DEGREES;
-           Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, outputUnitsAngle);
-           ftcPose.yaw = -rot.firstAngle;
-           ftcPose.roll = rot.thirdAngle;
-           ftcPose.pitch = rot.secondAngle;
+            AngleUnit outputUnitsAngle = AngleUnit.DEGREES;
+            Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, outputUnitsAngle);
+            ftcPose.yaw = -rot.firstAngle;
+            ftcPose.roll = rot.thirdAngle;
+            ftcPose.pitch = rot.secondAngle;
 
-           ftcPose.range = Math.hypot(ftcPose.x, ftcPose.y);
-           ftcPose.bearing = outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-ftcPose.x, ftcPose.y));
-           ftcPose.elevation = outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(ftcPose.z, ftcPose.y));
+            ftcPose.range = Math.hypot(ftcPose.x, ftcPose.y);
+            ftcPose.bearing = outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-ftcPose.x, ftcPose.y));
+            ftcPose.elevation = outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(ftcPose.z, ftcPose.y));
 
-           return ftcPose;
-       }
-       return null;
-   }
+            return ftcPose;
+        }
+        return null;
+    }
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));

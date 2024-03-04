@@ -146,8 +146,8 @@ public class joMama extends OpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
+            Core.extractChannel(leftCrop, leftCrop, 2);
+            Core.extractChannel(rightCrop, rightCrop, 2);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
@@ -155,7 +155,7 @@ public class joMama extends OpMode {
             leftavgfin = leftavg.val[0];
             rightavgfin = rightavg.val[0];
 
-            if (leftavgfin  > 150){
+            if (leftavgfin  > 140){
                 telemetry.addLine("LEFT!!!");
                 center = true;
                 right = false;
