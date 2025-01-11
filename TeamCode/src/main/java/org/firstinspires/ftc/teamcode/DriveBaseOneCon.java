@@ -39,9 +39,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 
 
-@TeleOp(name="DriveBaseTwentyTwo", group="DriveBase")
+@TeleOp(name="Simon's Drive Base", group="DriveBase")
 
-public class DriveBaseTwentyTwo extends OpMode
+public class DriveBaseOneCon extends OpMode
 {
     // Declare OpMode members.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -135,7 +135,7 @@ public class DriveBaseTwentyTwo extends OpMode
         runtime.reset();
     }
     double handStick = 0.255;
-    double wristStick = 0.855;
+    double wristStick = 0.86;
     double planes = 0.0;
     double elbowPad = 0.25;
     double place = 0.5;
@@ -156,10 +156,38 @@ public class DriveBaseTwentyTwo extends OpMode
         output.setPosition(place);
 
 
+       if (gamepad1.a){
+           handStick = 0.4401;
+           wristStick = 0.46983;
+       }
+       if (gamepad1.b){
+           wristStick = 0.855;
+           handStick = 0.255;
+       }
+       if(gamepad1.y){
+           handStick = 0.86345;
+           wristStick = 0.025;
+       }
+
+        intake.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
+
+
+
+        if (gamepad1.left_bumper){
+            place = 1.0;
+        }
+        else if (gamepad1.right_bumper){
+            place = 0.0;
+        }
+        else {
+            place = 0.5;
+        }
+
+
         planes = planes + ((gamepad2.right_trigger * 0.005) - (gamepad2.left_trigger * 0.005));
 
         planes = Range.clip(planes, 0.0d,1.0d);
-        wristStick = Range.clip(wristStick, 0.025d, 0.86d);
+        wristStick = Range.clip(wristStick, 0.025d, 0.914d);
         handStick = Range.clip(handStick, 0.0d, 1.0d);
         elbowPad = Range.clip(elbowPad, 0.25d, 0.75d);
 
@@ -168,44 +196,16 @@ public class DriveBaseTwentyTwo extends OpMode
         telemetry.addData("elbow pos",elbow.getPosition());
         telemetry.addData("plane pos",planes);
 
-        intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
 
-
-        if(gamepad2.a){
-            handStick = 0.4401;
-            wristStick = 0.46983;
-        }
-        if(gamepad2.y){
-            handStick = 0.86345;
-            wristStick = 0.025;
-        }
-        if(gamepad2.x){
-
-        }
-        if(gamepad2.b){
-            wristStick = 0.86;
-            handStick = 0.255;
-        }
-
-        if(gamepad2.dpad_up){
+        if(gamepad1.dpad_up){
             eMotors = eMotors + 20;
         }
-        else if(gamepad2.dpad_down){
+        else if(gamepad1.dpad_down){
             eMotors = eMotors - 20;
         }
 
-        if (gamepad1.right_bumper){
-            place = 1.0;
-        }
-        else if (gamepad1.left_bumper){
-            place = 0.0;
-        }
-        else {
-            place = 0.5;
-        }
-
-        eMotors = Range.clip(eMotors,0, 3360);
+        eMotors = Range.clip(eMotors,5, 3360);
 
         eMotor.setTargetPosition(eMotors);
         reMotor.setTargetPosition(eMotors);
@@ -226,25 +226,25 @@ public class DriveBaseTwentyTwo extends OpMode
 //        pivotMotor = Range.clip(pivotMotor, 0, 11100);
 //
 //
-//        if(gamepad2.dpad_up){
+//        if(gamepad1.dpad_up){
 //            pivotMotor = pivotMotor + 20;
 //        }
-//        else if(gamepad2.dpad_down){
+//        else if(gamepad1.dpad_down){
 //            pivotMotor = pivotMotor - 20;
 //        }
 
 
-        if(gamepad2.dpad_left){
+        if(gamepad1.dpad_left){
             elbowPad = elbowPad - 0.0025;
         }
-        else if(gamepad2.dpad_right){
+        else if(gamepad1.dpad_right){
             elbowPad = elbowPad + 0.0025;
         }
 
 
 
 
-        drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x / 1.25);
+        drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x / 1.25);
 
 
 
@@ -266,10 +266,10 @@ public class DriveBaseTwentyTwo extends OpMode
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
-        leftFront.setPower(-v1);
-        rightFront.setPower(-v2);
-        leftRear.setPower(-v3);
-        rightRear.setPower(-v4);
+        leftFront.setPower(v1);
+        rightFront.setPower(v2);
+        leftRear.setPower(v3);
+        rightRear.setPower(v4);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", v1, v2);
 

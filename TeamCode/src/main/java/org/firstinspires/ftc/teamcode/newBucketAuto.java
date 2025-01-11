@@ -29,7 +29,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.ArrayList;
 
 @Autonomous
-public class JoDadaBlue extends LinearOpMode {
+public class newBucketAuto extends LinearOpMode {
 
     OpenCvWebcam webcam1 = null;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -47,6 +47,7 @@ public class JoDadaBlue extends LinearOpMode {
     private Servo   plane;
     private Servo   elbow;
     private Servo   relbow;
+    private Servo   output;
     boolean center = false;
     boolean right = false;
     boolean left = false;
@@ -68,10 +69,18 @@ public class JoDadaBlue extends LinearOpMode {
 
     AprilTagDetection tagOfInterest = null;
 
+
+
     @Override
     public void runOpMode() {
 
         initRobot();
+        hand.setPosition(0.86345);
+        wrist.setPosition(0.025);
+        output.setPosition(0.5);
+        elbow.setPosition(0.75);
+        relbow.setPosition(0.75);
+
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
         int cameraMonitorViewId= hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -92,63 +101,96 @@ public class JoDadaBlue extends LinearOpMode {
         aprilTagInit();
         if (center){
             telemetry.addLine("center");
-            pidDrive(0.5,0.0,0.0, -1400);
+            elbow.setPosition(0.25);
+            relbow.setPosition(0.25);
+            pidDrive(0.5,0.0,0.0, -1450);
             sleep(100);
             intake.setPower(-0.2);
+            sleep(2000);
+            pidDrive(0.5,0.0,0.0,600);
+            intake.setPower(0.0);
+            pidDrive(0.0,0.75,0.0,200);
+            pidDrive(0.0,0.0,0.5,800);
+            runAprilTag(6);
+            moveArm(200);
+            sleep(2000);
+            wrist.setPosition(0.525);
+            hand.setPosition(0.4401);
             sleep(1000);
-            pidDrive(0.5,0.0,0.0,300);
-            pidDrive(0.0,0.75,0.0,-200);
-            pidDrive(0.0,0.0,0.5,-800);
-            runAprilTag(3);
+            output.setPosition(1.0);
+            sleep(2000);
+            hand.setPosition(0.86345);
+            wrist.setPosition(0.025);
+            output.setPosition(0.5);
             sleep(1000);
-            wrist.setPosition(0.68);
-            sleep(1000);
-            hand.setPosition(0.6);
-            sleep(1000);
-            pidDrive(0.0,1.0,0.0,1000);
-            wrist.setPosition(0.86);
-            hand.setPosition(0.255);
+            moveArm(0);
+            pidDrive(0.0,1.0,0.0,1100);
+            pidDrive(0.5,0.0,0.0,-200);
+            wrist.setPosition(0.025);
+            hand.setPosition(0.86);
 
         }
         else if (left){
-            telemetry.addLine("Left");
-            pidDrive(0.5,0.0,0.0, -800);
-            sleep(100);
-            pidDrive(0.0,0.0,0.5,-450);
-            pidDrive(0.3,0.0,0.0,-425);
-            intake.setPower(-0.2);
+            elbow.setPosition(0.25);
+            relbow.setPosition(0.25);
+            pidDrive(0.5,0.0,0.0,-900);
+            pidDrive(0.0,0.0,0.5,-800);
+            pidDrive(0.3,0.0,0.0,-400);
+            sleep(1);
+            intake.setPower(-0.25);
             sleep(1000);
-            pidDrive(0.5,0.0,0.0,425);
-            pidDrive(0.0,0.0,0.5,-400);
-            runAprilTag(2);
+            pidDrive(0.5,0.0,0.0,300);
+            pidDrive(0.0,0.0,0.5,1700);
+            runAprilTag(5);
+            moveArm(400);
+            sleep(2000);
+            wrist.setPosition(0.525);
+            hand.setPosition(0.4401);
             sleep(1000);
-            wrist.setPosition(0.67);
+            output.setPosition(1.0);
+            sleep(3000);
+            hand.setPosition(0.86345);
+            wrist.setPosition(0.025);
+            output.setPosition(0.5);
             sleep(1000);
-            hand.setPosition(0.61679);
-            sleep(1000);
-            pidDrive(0.0,1.0,0.0,-500);
+            moveArm(0);
+            pidDrive(0.0,1.0,0.0,-1000);
+            pidDrive(0.5,0.0,0.0,-200);
+            wrist.setPosition(0.025);
+            hand.setPosition(0.86);
 
         }
         else if (right){
             telemetry.addLine("right");
-            pidDrive(1.0,0.0,0.0, -800);
+            elbow.setPosition(0.25);
+            relbow.setPosition(0.25);
+            pidDrive(0.0,0.75,0.0,500);
+            pidDrive(0.5,0.0,0.0,-1250);
             sleep(100);
-            pidDrive(0.0,0.0,0.5,250);
-            pidDrive(0.3,0.0,0.0,-400);
             intake.setPower(-0.2);
             sleep(2000);
             pidDrive(0.5,0.0,0.0,500);
-            pidDrive(0.0,0.5,0.0,-200);
-            pidDrive(0.0,0.0,0.5,-1400);
-            runAprilTag(3);
-            sleep(100);
-            pidDrive(-0.05,0.75,0.0,300);
-            sleep(1);
-            wrist.setPosition(0.67);
+            intake.setPower(0.0);
+            pidDrive(0.0,0.75,0.0,200);
+            pidDrive(0.0,0.0,0.5,800);
+            runAprilTag(6);
+            pidDrive(0.0,0.75,0.0,250);
+            moveArm(300);
+            sleep(2000);
+            wrist.setPosition(0.525);
+            hand.setPosition(0.4401);
             sleep(1000);
-            hand.setPosition(0.61679);
+            output.setPosition(1.0);
+            sleep(3000);
+            hand.setPosition(0.86345);
+            wrist.setPosition(0.025);
+            output.setPosition(0.5);
             sleep(1000);
-            pidDrive(0.0,1.0,0.0,200);
+            moveArm(0);
+            pidDrive(0.0,1.0,0.1,1000);
+            pidDrive(0.5,0.0,0.0,-200);
+            wrist.setPosition(0.25);
+            hand.setPosition(0.86);
 
         }
     }
@@ -172,8 +214,8 @@ public class JoDadaBlue extends LinearOpMode {
 
             Imgproc.cvtColor(input,YCbCr,Imgproc.COLOR_RGB2YCrCb);
 
-            Rect leftRect = new Rect(80, 200, 100, 50);
-            Rect rightRect = new Rect(400, 190, 100, 50);
+            Rect leftRect = new Rect(120, 200, 100, 50);
+            Rect rightRect = new Rect(430, 220, 100, 50);
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 2);
@@ -182,8 +224,8 @@ public class JoDadaBlue extends LinearOpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 2);
-            Core.extractChannel(rightCrop, rightCrop, 2);
+            Core.extractChannel(leftCrop, leftCrop, 1);
+            Core.extractChannel(rightCrop, rightCrop, 1);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
@@ -191,9 +233,7 @@ public class JoDadaBlue extends LinearOpMode {
             leftavgfin = leftavg.val[0];
             rightavgfin = rightavg.val[0];
 
-
-
-            if (leftavgfin  > 140){
+            if (leftavgfin  > 150){
                 telemetry.addLine("LEFT!!!");
                 center = true;
                 right = false;
@@ -236,6 +276,21 @@ public class JoDadaBlue extends LinearOpMode {
 
     }
 
+    private void moveArm(int eMotors) {
+
+
+        eMotors = Range.clip(eMotors,0, 3360);
+
+        eMotor.setTargetPosition(eMotors);
+        reMotor.setTargetPosition(eMotors);
+
+        eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        reMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        eMotor.setPower(Math.abs(0.75));
+        reMotor.setPower(Math.abs(0.75));
+    }
+
     private void runAprilTag (int desiredTag){
         boolean done = false;
         while (!isStopRequested() && !done)
@@ -263,7 +318,7 @@ public class JoDadaBlue extends LinearOpMode {
                     AprilTagPose pose = getFTCPose(tagOfInterest);
                     telemetry.addData("range", "%f", pose.range);
                     telemetry.addData("Bearing", "%f", pose.bearing);
-                    done = aprilTagMove(0.5,0.2,0.175, 0.45, pose);
+                    done = aprilTagMove(0.5,0.2,0.175, 0.375, pose);
                 }
                 else {
                     drive(0.0,0.0,0.0);
@@ -351,6 +406,7 @@ public class JoDadaBlue extends LinearOpMode {
         plane = hardwareMap.get(Servo.class, "planes");
         elbow = hardwareMap.get(Servo.class, "elbow");
         relbow = hardwareMap.get(Servo.class, "relbow");
+        output = hardwareMap.get(Servo.class, "output");
 
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -396,7 +452,7 @@ public class JoDadaBlue extends LinearOpMode {
 // Elapsed timer class from SDK, please use it, it's epic
         ElapsedTime timer = new ElapsedTime();
 
-        while (setPointIsNotReached) {
+        while (setPointIsNotReached && !isStopRequested()) {
 
 
             // obtain the encoder position

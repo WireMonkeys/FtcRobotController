@@ -47,6 +47,7 @@ public class JoDadaBoard extends LinearOpMode {
     private Servo   plane;
     private Servo   elbow;
     private Servo   relbow;
+    private Servo   output;
     boolean center = false;
     boolean right = false;
     boolean left = false;
@@ -68,10 +69,18 @@ public class JoDadaBoard extends LinearOpMode {
 
     AprilTagDetection tagOfInterest = null;
 
+
+
     @Override
     public void runOpMode() {
 
         initRobot();
+        hand.setPosition(0.86345);
+        wrist.setPosition(0.025);
+        output.setPosition(0.5);
+        elbow.setPosition(0.75);
+        relbow.setPosition(0.75);
+
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
         int cameraMonitorViewId= hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -94,7 +103,7 @@ public class JoDadaBoard extends LinearOpMode {
             telemetry.addLine("center");
             pidDrive(0.5,0.0,0.0, -1400);
             sleep(100);
-            intake.setPower(-0.2);
+            intake.setPower(-1.0);
             sleep(1000);
             pidDrive(0.5,0.0,0.0,600);
             pidDrive(0.0,0.75,0.0,200);
@@ -112,7 +121,7 @@ public class JoDadaBoard extends LinearOpMode {
             sleep(100);
             pidDrive(0.0,0.0,0.5,-600);
             pidDrive(0.3,0.0,0.0,-425);
-            intake.setPower(-0.2);
+            intake.setPower(-1.0);
             sleep(1000);
             pidDrive(0.5,0.0,0.0,425);
             pidDrive(0.0,0.0,0.5,1450);
@@ -131,7 +140,7 @@ public class JoDadaBoard extends LinearOpMode {
             sleep(100);
             pidDrive(0.0,0.0,0.5,250);
             pidDrive(0.3,0.0,0.0,-500);
-            intake.setPower(-0.2);
+            intake.setPower(-1.0);
             sleep(2000);
             pidDrive(0.5,0.0,0.0,500);
             pidDrive(0.0,0.5,0.0,200);
@@ -232,6 +241,21 @@ public class JoDadaBoard extends LinearOpMode {
 
     }
 
+    private void moveArm(int eMotors) {
+
+
+        eMotors = Range.clip(eMotors, -4088, 0);
+
+        eMotor.setTargetPosition(eMotors);
+        reMotor.setTargetPosition(eMotors);
+
+        eMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        reMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        eMotor.setPower(Math.abs(0.75));
+        reMotor.setPower(Math.abs(0.75));
+    }
+
     private void runAprilTag (int desiredTag){
         boolean done = false;
         while (!isStopRequested() && !done)
@@ -259,7 +283,7 @@ public class JoDadaBoard extends LinearOpMode {
                     AprilTagPose pose = getFTCPose(tagOfInterest);
                     telemetry.addData("range", "%f", pose.range);
                     telemetry.addData("Bearing", "%f", pose.bearing);
-                    done = aprilTagMove(0.5,0.2,0.175, 0.45, pose);
+                    done = aprilTagMove(0.5,0.2,0.175, 1.0, pose);
                 }
                 else {
                     drive(0.0,0.0,0.0);
@@ -347,6 +371,7 @@ public class JoDadaBoard extends LinearOpMode {
         plane = hardwareMap.get(Servo.class, "planes");
         elbow = hardwareMap.get(Servo.class, "elbow");
         relbow = hardwareMap.get(Servo.class, "relbow");
+        output = hardwareMap.get(Servo.class, "output");
 
 
         // Most robots need the motor on one side to be reversed to drive forward
